@@ -1,7 +1,8 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import axios from 'axios'
 import { apiUrl } from './common'
+import { persistStore, persistReducer } from 'redux-persist'
+import createSS from '../utils/secureStorageWrapper'
 
 export interface User {
     username: string
@@ -31,28 +32,26 @@ export interface AuthState {
 
 const initialState: AuthState = {
     loading: false,
-    userInfo: {} as User, // for user object
-    userToken: '', // for storing the JWT
+    userInfo: {} as User,
+    userToken: '',
     error: null,
-    loggedIn: false, // for monitoring the registration process.
+    loggedIn: false,
 }
 
 export const authApi = createApi({
     reducerPath: 'authApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: `${apiUrl}`,
+        baseUrl: `${apiUrl}auth`,
     }),
-    endpoints(builder) {
-        return {
-            login: builder.mutation<LoginResponse, LoginRequest>({
-                query: (loginForm: LoginRequest) => ({
-                    url: 'auth/login',
-                    method: 'POST',
-                    body: loginForm,
-                })
+    endpoints: (builder) => ({
+        login: builder.mutation<LoginResponse, LoginRequest>({
+            query: (loginForm: LoginRequest) => ({
+                url: '/login',
+                method: 'POST',
+                body: loginForm,
             })
-        }
-    }
+        })
+    }),
 })
 
 export const { useLoginMutation } = authApi
@@ -61,6 +60,10 @@ export const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
+        logout: (state) => {
+            state.userToken = ""
+            state.loggedIn = false
+        },
     },
     extraReducers: builder => {
         builder.addMatcher(
@@ -75,3 +78,5 @@ export const authSlice = createSlice({
         )
     },
 })
+
+export const { logout } = authSlice.actions

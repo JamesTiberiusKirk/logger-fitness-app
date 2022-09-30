@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, Text } from 'react-native-paper'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { FormBuilder } from 'react-native-paper-form-builder';
 import { useForm } from 'react-hook-form';
 import { useLoginMutation } from "../state/auth";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import { useToast } from "react-native-toast-notifications";
 
 export default function LoginScreen() {
+    const [login, { isLoading }] = useLoginMutation()
+    const toast = useToast()
     const { control, setFocus, handleSubmit } = useForm({
         defaultValues: {
             email: '',
@@ -14,8 +17,6 @@ export default function LoginScreen() {
         },
         mode: 'onChange',
     });
-
-    const [login, { isLoading }] = useLoginMutation()
 
     return (
         <View style={styles.containerStyle}>
@@ -25,7 +26,7 @@ export default function LoginScreen() {
                 textStyle={styles.spinnerTextStyle}
             />
             <ScrollView contentContainerStyle={styles.scrollViewStyle}>
-                <Text style={styles.headingStyle}>Form Builder Basic Demo</Text>
+                <Text style={styles.headingStyle}>Login</Text>
                 <FormBuilder
                     control={control}
                     setFocus={setFocus}
@@ -33,7 +34,6 @@ export default function LoginScreen() {
                         {
                             type: 'email',
                             name: 'email',
-
                             rules: {
                                 required: {
                                     value: true,
@@ -60,12 +60,22 @@ export default function LoginScreen() {
                     ]}
                 />
                 <Button
+                    style={styles.button}
                     mode={'contained'}
                     onPress={handleSubmit((data: any) => {
                         console.log('form data', data);
                         login(data)
                     })}>
                     Submit
+                </Button>
+                <Button
+                    style={styles.button}
+                    mode={'contained'}
+                    onPress={()=>{
+                        toast.show("Not implemented yet");
+                    }}
+                >
+                    Google  Oauth
                 </Button>
             </ScrollView>
         </View>
@@ -78,7 +88,7 @@ const styles = StyleSheet.create({
     },
     scrollViewStyle: {
         flex: 1,
-        padding: 15,
+        padding: 25,
         justifyContent: 'center',
     },
     headingStyle: {
@@ -88,5 +98,9 @@ const styles = StyleSheet.create({
     },
     spinnerTextStyle: {
         color: '#FFF'
+    },
+    button: {
+        marginBottom: 15,
+        padding: 5,
     },
 });
