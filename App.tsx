@@ -23,8 +23,8 @@ export default function App() {
         <PaperProvider>
           <ToastProvider>
             <StoreProvider store={store}>
-              <Navigation colorScheme={colorScheme} />
-              <StatusBar />
+                <Navigation colorScheme={colorScheme} />
+                <StatusBar />
             </StoreProvider>
           </ToastProvider>
         </PaperProvider>

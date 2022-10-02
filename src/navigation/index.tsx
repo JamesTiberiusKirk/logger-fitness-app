@@ -1,8 +1,3 @@
-/**
- * If you are not familiar with React Navigation, refer to the "Fundamentals" guide:
- * https://reactnavigation.org/docs/getting-started
- *
- */
 import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
@@ -14,22 +9,26 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import ModalScreen from '../screens/ModalScreen';
 import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
-import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
-import LinkingConfiguration from './LinkingConfiguration';
+import { RootTabParamList, RootTabScreenProps } from '../types';
 
-import { useAppSelector } from '../state/state'
+import { useAppDispatch, useAppSelector } from '../state/state'
 import LoginScreen from '../screens/LoginScreen';
 import WorkoutsScreen from '../screens/WorkoutsScreen';
+import { AuthState, hydrateUserFromSS } from '../state/auth';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
-  const user = useAppSelector((state) => state.auth)
+  const dispatch = useAppDispatch();
+  const authState = useAppSelector((state) => state.auth)
+
+  // NO IDEA if this is how im meant todo it, but it works...
+  React.useEffect(() => {
+    dispatch(hydrateUserFromSS())
+  }, [dispatch])
 
   return (
     <NavigationContainer
-      // linking={LinkingConfiguration}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      {user.loggedIn ? <MainNavigator /> : <UnauthenticatedNavigator />}
+      {authState.loggedIn ? <MainNavigator /> : <UnauthenticatedNavigator />}
     </NavigationContainer>
   );
 }
@@ -113,3 +112,7 @@ function BottomTabNavigator() {
     </BottomTab.Navigator>
   );
 }
+function setState(arg0: AuthState) {
+  throw new Error('Function not implemented.');
+}
+
