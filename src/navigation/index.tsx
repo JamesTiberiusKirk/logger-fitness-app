@@ -74,7 +74,7 @@ function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="Workouts"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
       }}>

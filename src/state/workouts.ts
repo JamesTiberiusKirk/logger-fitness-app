@@ -15,16 +15,21 @@ export interface Workout {
 }
 
 export interface WorkoutResponse {
+    key: string
     workout: Workout
     exercises: Exercise[]
 }
 
 export interface WorkoutsState {
-    workouts: WorkoutResponse[] | null
+    workouts: WorkoutResponse[]
+    status: "pending" | "idle" | "error"
+    error: Error | null
 }
 
 const initialWorkoutState: WorkoutsState = {
-    workouts: null
+    workouts: [],
+    status: "idle",
+    error: null,
 }
 
 export const workoutsApi = createApi({
@@ -36,6 +41,13 @@ export const workoutsApi = createApi({
                 url: 'workouts',
                 method: 'GET',
             }),
+            transformResponse: (result: WorkoutResponse[]): WorkoutResponse[] => {
+                return result.map((w, i) => ({
+                    key: i.toString(),
+                    workout: w.workout,
+                    exercises: w.exercises
+                } as WorkoutResponse))
+            }
         }),
         startWorkout: builder.mutation<any, Workout>({
             query: (workout: Workout) => ({
@@ -65,8 +77,22 @@ export const workoutsSlice = createSlice({
     reducers: {},
     extraReducers: builder => {
         builder.addMatcher(
+            workoutsApi.endpoints.workouts.matchPending,
+            (state, { payload }) => {
+                state.status = "pending"
+            }
+        )
+        builder.addMatcher(
+            workoutsApi.endpoints.workouts.matchRejected,
+            (state, { payload }) => {
+                state.status = "error"
+            }
+        )
+        builder.addMatcher(
             workoutsApi.endpoints.workouts.matchFulfilled,
             (state, { payload }) => {
+                state.status = "idle"
+                state.error = null
                 state.workouts = payload
             },
         )

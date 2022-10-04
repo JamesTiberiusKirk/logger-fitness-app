@@ -2,11 +2,12 @@ import { useDispatch, TypedUseSelectorHook, useSelector } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 
 import { authApi, authSlice } from './auth'
-import { workoutsApi } from './workouts'
+import { workoutsApi, workoutsSlice } from './workouts'
 
 export const store = configureStore({
     reducer: {
         'auth': authSlice.reducer,
+        'workouts': workoutsSlice.reducer,
         [authApi.reducerPath]: authApi.reducer,
         [workoutsApi.reducerPath]: workoutsApi.reducer,
     },
